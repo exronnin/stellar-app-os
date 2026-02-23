@@ -8,14 +8,23 @@ import { getErrorPresentation } from '@/lib/errorHandling';
 interface ErrorBoundaryFallbackProps {
   error: Error & { digest?: string };
   onRetry: () => void;
+  variant?: 'overlay' | 'page';
 }
 
-export function ErrorBoundaryFallback({ error, onRetry }: ErrorBoundaryFallbackProps): React.ReactNode {
+export function ErrorBoundaryFallback({
+  error,
+  onRetry,
+  variant = 'overlay',
+}: ErrorBoundaryFallbackProps): React.ReactNode {
   const presentation = getErrorPresentation(error);
+  const isOverlay = variant === 'overlay';
+  const containerClass = isOverlay
+    ? 'fixed inset-0 z-50 flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-slate-50/90 via-cyan-50/70 to-slate-100/90 p-4 backdrop-blur-sm dark:from-slate-950/80 dark:via-slate-900/70 dark:to-slate-950/90 sm:p-6 lg:p-10'
+    : 'mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center bg-gradient-to-br from-slate-50/90 via-cyan-50/70 to-slate-100/90 p-4 backdrop-blur-sm dark:from-slate-950/80 dark:via-slate-900/70 dark:to-slate-950/90 sm:p-6 lg:p-10';
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center p-4 sm:p-6 lg:p-10">
-      <Card className="w-full max-w-xl">
+    <div className={containerClass} role="alertdialog">
+      <Card className="w-full max-w-xl border-white/40 bg-white/70 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60">
         <CardHeader className="space-y-3">
           <Text variant="small" className="font-semibold uppercase tracking-wide text-muted-foreground">
             {presentation.type} error
@@ -43,6 +52,6 @@ export function ErrorBoundaryFallback({ error, onRetry }: ErrorBoundaryFallbackP
           ) : null}
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }
